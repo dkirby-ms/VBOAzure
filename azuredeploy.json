@@ -15,27 +15,27 @@
             "type": "String"
         },
         "networkInterfaces_vbo1677_name": {
-            "defaultValue": "vbo1677",
+            "defaultValue": "nic-vbo1677",
             "type": "String"
         },
         "publicIPAddresses_VBO1_ip_name": {
-            "defaultValue": "VBO1-ip",
+            "defaultValue": "pip-VBO1",
             "type": "String"
         },
         "virtualNetworks_VBO1_vnet_name": {
-            "defaultValue": "VBO1-vnet",
+            "defaultValue": "vnet-VBO1",
             "type": "String"
         },
         "storageAccounts_vbobackup1_name": {
-            "defaultValue": "vbobackup1",
+            "defaultValue": "vbobackup<ldk123>",
             "type": "String"
         },
         "networkSecurityGroups_VBO1_nsg_name": {
-            "defaultValue": "VBO1-nsg",
+            "defaultValue": "nsg-VBO1",
             "type": "String"
         },
         "publicIPAddresses_VBO1_vnet_ip_name": {
-            "defaultValue": "VBO1-vnet-ip",
+            "defaultValue": "pip-VBO1-vnet",
             "type": "String"
         }
     },
