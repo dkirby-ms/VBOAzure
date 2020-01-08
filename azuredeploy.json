@@ -77,7 +77,6 @@
                 "name": "Basic"
             },
             "properties": {
-                "ipAddress": "104.46.0.104",
                 "publicIPAddressVersion": "IPv4",
                 "publicIPAllocationMethod": "Dynamic",
                 "idleTimeoutInMinutes": 4,
@@ -341,8 +340,7 @@
                         "createOption": "FromImage",
                         "caching": "ReadWrite",
                         "managedDisk": {
-                            "storageAccountType": "StandardSSD_LRS",
-                            "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('virtualMachines_VBO1_name'), '_OsDisk_1_75e6c976128d4a47bce9ac831b7ad2ff'))]"
+                            "storageAccountType": "StandardSSD_LRS"
                         },
                         "diskSizeGB": 127
                     },
@@ -453,7 +451,6 @@
                     {
                         "name": "ipconfig1",
                         "properties": {
-                            "privateIPAddress": "192.168.2.4",
                             "privateIPAllocationMethod": "Dynamic",
                             "publicIPAddress": {
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_VBO1_ip_name'))]"
