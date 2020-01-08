@@ -6,10 +6,6 @@
             "defaultValue": "vm-VBO1",
             "type": "String"
         },
-        "bastionHosts_VBOBastion_name": {
-            "defaultValue": "VBOBastion",
-            "type": "String"
-        },
         "storageAccounts_vbo1diag_name": {
             "defaultValue": "vbo1diag<ldk123>",
             "type": "String"
@@ -32,10 +28,6 @@
         },
         "networkSecurityGroups_VBO1_nsg_name": {
             "defaultValue": "nsg-VBO1",
-            "type": "String"
-        },
-        "publicIPAddresses_VBO1_vnet_ip_name": {
-            "defaultValue": "pip-VBO1-vnet",
             "type": "String"
         }
     },
@@ -84,21 +76,6 @@
             }
         },
         {
-            "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2019-09-01",
-            "name": "[parameters('publicIPAddresses_VBO1_vnet_ip_name')]",
-            "location": "eastus2",
-            "sku": {
-                "name": "Standard"
-            },
-            "properties": {
-                "publicIPAddressVersion": "IPv4",
-                "publicIPAllocationMethod": "Dynamic",
-                "idleTimeoutInMinutes": 4,
-                "ipTags": []
-            }
-        },
-        {
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2019-09-01",
             "name": "[parameters('virtualNetworks_VBO1_vnet_name')]",
@@ -115,16 +92,6 @@
                         "name": "default",
                         "properties": {
                             "addressPrefix": "192.168.2.0/24",
-                            "serviceEndpoints": [],
-                            "delegations": [],
-                            "privateEndpointNetworkPolicies": "Enabled",
-                            "privateLinkServiceNetworkPolicies": "Enabled"
-                        }
-                    },
-                    {
-                        "name": "AzureBastionSubnet",
-                        "properties": {
-                            "addressPrefix": "192.168.3.0/27",
                             "serviceEndpoints": [],
                             "delegations": [],
                             "privateEndpointNetworkPolicies": "Enabled",
@@ -244,21 +211,6 @@
         {
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "apiVersion": "2019-09-01",
-            "name": "[concat(parameters('virtualNetworks_VBO1_vnet_name'), '/AzureBastionSubnet')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_VBO1_vnet_name'))]"
-            ],
-            "properties": {
-                "addressPrefix": "192.168.3.0/27",
-                "serviceEndpoints": [],
-                "delegations": [],
-                "privateEndpointNetworkPolicies": "Enabled",
-                "privateLinkServiceNetworkPolicies": "Enabled"
-            }
-        },
-        {
-            "type": "Microsoft.Network/virtualNetworks/subnets",
-            "apiVersion": "2019-09-01",
             "name": "[concat(parameters('virtualNetworks_VBO1_vnet_name'), '/default')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_VBO1_vnet_name'))]"
@@ -340,8 +292,8 @@
                         "createOption": "FromImage",
                         "caching": "ReadWrite",
                         "managedDisk": {
-                            "storageAccountType": "StandardSSD_LRS"
-                        },
+                            "storageAccountType": "StandardSSD_LRS",
+                            },
                         "diskSizeGB": 127
                     },
                     "dataDisks": [
@@ -352,8 +304,7 @@
                             "caching": "ReadOnly",
                             "writeAcceleratorEnabled": false,
                             "managedDisk": {
-                                "storageAccountType": "StandardSSD_LRS",
-                                "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('virtualMachines_VBO1_name'), '_DataDisk_0'))]"
+                                "storageAccountType": "StandardSSD_LRS"
                             },
                             "diskSizeGB": 1024,
                             "toBeDetached": false
@@ -383,33 +334,6 @@
                         "storageUri": "[concat('https://', parameters('storageAccounts_vbo1diag_name'), '.blob.core.windows.net/')]"
                     }
                 }
-            }
-        },
-        {
-            "type": "Microsoft.Network/bastionHosts",
-            "apiVersion": "2019-09-01",
-            "name": "[parameters('bastionHosts_VBOBastion_name')]",
-            "location": "eastus2",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_VBO1_vnet_ip_name'))]",
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_VBO1_vnet_name'), 'AzureBastionSubnet')]"
-            ],
-            "properties": {
-                "dnsName": "bst-df22509a-0c69-4a93-9c1c-a5a7f9b45f03.bastion.azure.com",
-                "ipConfigurations": [
-                    {
-                        "name": "IpConf",
-                        "properties": {
-                            "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_VBO1_vnet_ip_name'))]"
-                            },
-                            "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_VBO1_vnet_name'), 'AzureBastionSubnet')]"
-                            }
-                        }
-                    }
-                ]
             }
         },
         {
