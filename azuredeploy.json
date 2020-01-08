@@ -29,6 +29,10 @@
         "networkSecurityGroups_VBO1_nsg_name": {
             "defaultValue": "nsg-VBO1",
             "type": "String"
+        },
+        "publicIPAddresses_VBO1_vnet_ip_name": {
+            "defaultValue": "pip-VBO1-vnet",
+            "type": "String"
         }
     },
     "variables": {},
@@ -67,6 +71,21 @@
             "location": "eastus2",
             "sku": {
                 "name": "Basic"
+            },
+            "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4,
+                "ipTags": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-09-01",
+            "name": "[parameters('publicIPAddresses_VBO1_vnet_ip_name')]",
+            "location": "eastus2",
+            "sku": {
+                "name": "Standard"
             },
             "properties": {
                 "publicIPAddressVersion": "IPv4",
