@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "virtualMachines_VBO1_name": {
-            "defaultValue": "vm-VBO1",
+            "defaultValue": "VBO1",
             "type": "String"
         },
         "bastionHosts_VBOBastion_name": {
@@ -11,31 +11,31 @@
             "type": "String"
         },
         "storageAccounts_vbo1diag_name": {
-            "defaultValue": "vbo1diag<ldk123>",
+            "defaultValue": "vbo1diag",
             "type": "String"
         },
         "networkInterfaces_vbo1677_name": {
-            "defaultValue": "nic-vbo1677",
+            "defaultValue": "vbo1677",
             "type": "String"
         },
         "publicIPAddresses_VBO1_ip_name": {
-            "defaultValue": "pip-VBO1",
+            "defaultValue": "VBO1-ip",
             "type": "String"
         },
         "virtualNetworks_VBO1_vnet_name": {
-            "defaultValue": "vnet-VBO1",
+            "defaultValue": "VBO1-vnet",
             "type": "String"
         },
         "storageAccounts_vbobackup1_name": {
-            "defaultValue": "vbobackup<ldk123>",
+            "defaultValue": "vbobackup1",
             "type": "String"
         },
         "networkSecurityGroups_VBO1_nsg_name": {
-            "defaultValue": "nsg-VBO1",
+            "defaultValue": "VBO1-nsg",
             "type": "String"
         },
         "publicIPAddresses_VBO1_vnet_ip_name": {
-            "defaultValue": "pip-VBO1-vnet",
+            "defaultValue": "VBO1-vnet-ip",
             "type": "String"
         }
     },
@@ -77,6 +77,7 @@
                 "name": "Basic"
             },
             "properties": {
+                "ipAddress": "104.46.0.104",
                 "publicIPAddressVersion": "IPv4",
                 "publicIPAllocationMethod": "Dynamic",
                 "idleTimeoutInMinutes": 4,
@@ -92,8 +93,9 @@
                 "name": "Standard"
             },
             "properties": {
+                "ipAddress": "40.70.172.39",
                 "publicIPAddressVersion": "IPv4",
-                "publicIPAllocationMethod": "Dynamic",
+                "publicIPAllocationMethod": "Static",
                 "idleTimeoutInMinutes": 4,
                 "ipTags": []
             }
@@ -340,7 +342,8 @@
                         "createOption": "FromImage",
                         "caching": "ReadWrite",
                         "managedDisk": {
-                            "storageAccountType": "StandardSSD_LRS"
+                            "storageAccountType": "StandardSSD_LRS",
+                            "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('virtualMachines_VBO1_name'), '_OsDisk_1_75e6c976128d4a47bce9ac831b7ad2ff'))]"
                         },
                         "diskSizeGB": 127
                     },
@@ -451,6 +454,7 @@
                     {
                         "name": "ipconfig1",
                         "properties": {
+                            "privateIPAddress": "192.168.2.4",
                             "privateIPAllocationMethod": "Dynamic",
                             "publicIPAddress": {
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_VBO1_ip_name'))]"
