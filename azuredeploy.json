@@ -11,7 +11,7 @@
             "type": "String"
         },
         "storageAccounts_vbo1diag_name": {
-            "defaultValue": "vbo1diag",
+            "defaultValue": "vbo1diag<ldk123>",
             "type": "String"
         },
         "networkInterfaces_vbo1677_name": {
