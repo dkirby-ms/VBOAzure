@@ -340,8 +340,8 @@
                         "createOption": "FromImage",
                         "caching": "ReadWrite",
                         "managedDisk": {
-                            "storageAccountType": "StandardSSD_LRS",
-                            },
+                            "storageAccountType": "StandardSSD_LRS"
+                        },
                         "diskSizeGB": 127
                     },
                     "dataDisks": [
@@ -352,7 +352,8 @@
                             "caching": "ReadOnly",
                             "writeAcceleratorEnabled": false,
                             "managedDisk": {
-                                "storageAccountType": "StandardSSD_LRS"
+                                "storageAccountType": "StandardSSD_LRS",
+                                "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('virtualMachines_VBO1_name'), '_DataDisk_0'))]"
                             },
                             "diskSizeGB": 1024,
                             "toBeDetached": false
