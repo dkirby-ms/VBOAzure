@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_VBO1_name": {
+            "value": null
+        },
+        "bastionHosts_VBOBastion_name": {
+            "value": null
+        },
+        "storageAccounts_vbo1diag_name": {
+            "value": null
+        },
+        "networkInterfaces_vbo1677_name": {
+            "value": null
+        },
+        "publicIPAddresses_VBO1_ip_name": {
+            "value": null
+        },
+        "virtualNetworks_VBO1_vnet_name": {
+            "value": null
+        },
+        "storageAccounts_vbobackup1_name": {
+            "value": null
+        },
+        "networkSecurityGroups_VBO1_nsg_name": {
+            "value": null
+        },
+        "publicIPAddresses_VBO1_vnet_ip_name": {
+            "value": null
+        }
+    }
+}
