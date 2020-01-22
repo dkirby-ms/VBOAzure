@@ -6,6 +6,10 @@
             "defaultValue": "eastus2",
             "type": "String"
         },
+        "storageAccounts_vbobackup1_name": {
+            "defaultValue": "vbobackup<123abc>",
+            "type": "String"
+        },
         "virtualMachines_VBO1_name": {
             "defaultValue": "vm-VBO1",
             "type": "String"
@@ -19,7 +23,7 @@
             "defaultValue": "Pass@word123!"
         },
         "storageAccounts_vbo1diag_name": {
-            "defaultValue": "vbo1diag<123>",
+            "defaultValue": "vbo1diag<123abc>",
             "type": "String"
         },
         "networkInterfaces_vbo1677_name": {
@@ -50,7 +54,7 @@
                 {
                     "name": "[parameters('subnetName')]",
                     "properties": {
-                        "addressPrefix": "[parameters('addressPrefixes')]",
+                        "addressPrefix": "[parameters('addressPrefixes')[0]]",
                         "serviceEndpoints": [
                             {
                                 "service": "Microsoft.Storage",
@@ -65,10 +69,6 @@
                     }
                 }
             ]
-        },
-        "storageAccounts_vbobackup1_name": {
-            "defaultValue": "vbobackup<123>",
-            "type": "String"
         },
         "networkSecurityGroups_VBO1_nsg_name": {
             "defaultValue": "nsg-VBO1",
@@ -105,7 +105,11 @@
             ]
         }
     },
-    "variables": {},
+    "variables": {
+        "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_VBO1_nsg_name'))]",
+        "vnetId": "[resourceId(resourceGroup().name,'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]"
+    },
     "resources": [
         {
             "type": "Microsoft.Network/networkSecurityGroups",
@@ -150,38 +154,15 @@
             }
         },
         {
-            "type": "Microsoft.Network/virtualNetworks",
-            "apiVersion": "2019-09-01",
             "name": "[parameters('virtualNetworkName')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-04-01",
             "location": "[parameters('location')]",
             "properties": {
                 "addressSpace": {
-                    "addressPrefixes": [
-                        "[parameters('addressPrefixes')]"
-                    ]
+                    "addressPrefixes": "[parameters('addressPrefixes')]"
                 },
-                "subnets": [
-                    {
-                        "name": "[parameters('subnetName')]",
-                        "properties": {
-                            "addressPrefix": "[parameters('addressPrefixes')]",
-                            "serviceEndpoints": [
-                                {
-                                    "service": "Microsoft.Storage",
-                                    "locations": [
-                                        "[parameters('location')]"
-                                    ]
-                                }
-                            ],
-                            "delegations": [],
-                            "privateEndpointNetworkPolicies": "Enabled",
-                            "privateLinkServiceNetworkPolicies": "Enabled"
-                        }
-                    }
-                ],
-                "virtualNetworkPeerings": [],
-                "enableDdosProtection": false,
-                "enableVmProtection": false
+                "subnets": "[parameters('subnets')]"
             }
         },
         {
@@ -219,6 +200,9 @@
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-04-01",
             "name": "[parameters('storageAccounts_vbobackup1_name')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+            ],
             "location": "[parameters('location')]",
             "sku": {
                 "name": "Standard_RAGRS",
@@ -228,9 +212,15 @@
             "properties": {
                 "networkAcls": {
                     "bypass": "AzureServices",
-                    "virtualNetworkRules": [],
+                    "virtualNetworkRules": [
+                        {
+                            "id": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+                            "action": "Allow",
+                            "state": "Succeeded"
+                        }
+                    ],
                     "ipRules": [],
-                    "defaultAction": "Allow"
+                    "defaultAction": "Deny"
                 },
                 "supportsHttpsTrafficOnly": true,
                 "encryption": {
@@ -443,7 +433,7 @@
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_VBO1_ip_name'))]"
                             },
                             "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName'))]"
+                                "id": "[variables('subnetRef')]"
                             },
                             "primary": true,
                             "privateIPAddressVersion": "IPv4"
