@@ -1,4 +1,4 @@
-# VeeamOnAzureLab
+# VBO365 Lab on Azure
 This lab is conducted as a guided workshop to give partner technical resources hands-on experience with Veeam Backup for O365 to Microsoft Azure.<br><br>
 
 <b>azuredeploy.json</b> - The ARM template to deploy Azure environment to run the lab.<br>
