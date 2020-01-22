@@ -19,7 +19,7 @@
             "defaultValue": "Pass@word123!"
         },
         "storageAccounts_vbo1diag_name": {
-            "defaultValue": "vbo1diag25351",
+            "defaultValue": "vbo1diag<123>",
             "type": "String"
         },
         "networkInterfaces_vbo1677_name": {
@@ -35,7 +35,7 @@
             "type": "String"
         },
         "storageAccounts_vbobackup1_name": {
-            "defaultValue": "vbobackup153215",
+            "defaultValue": "vbobackup<123>",
             "type": "String"
         },
         "networkSecurityGroups_VBO1_nsg_name": {
