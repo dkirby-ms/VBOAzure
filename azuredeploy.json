@@ -1,33 +1,45 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "virtualMachines_VBO1_name": {
-            "defaultValue": "VBO1",
+        "location": {
+            "defaultValue": "eastus2",
             "type": "String"
         },
+        "virtualMachines_VBO1_name": {
+            "defaultValue": "vm-VBO1",
+            "type": "String"
+        },
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "VeeamLab"
+        },
+        "adminPassword": {
+            "type": "secureString",
+            "defaultValue": "Pass@word123!"
+        },
         "storageAccounts_vbo1diag_name": {
-            "defaultValue": "vbo1diag",
+            "defaultValue": "vbo1diag25351",
             "type": "String"
         },
         "networkInterfaces_vbo1677_name": {
-            "defaultValue": "vbo1677",
+            "defaultValue": "nic-vbo1677",
             "type": "String"
         },
         "publicIPAddresses_VBO1_ip_name": {
-            "defaultValue": "VBO1-ip",
+            "defaultValue": "pip-VBO1",
             "type": "String"
         },
         "virtualNetworks_VBO1_vnet_name": {
-            "defaultValue": "VBO1-vnet",
+            "defaultValue": "vnet-VBO1",
             "type": "String"
         },
         "storageAccounts_vbobackup1_name": {
-            "defaultValue": "vbobackup1",
+            "defaultValue": "vbobackup153215",
             "type": "String"
         },
         "networkSecurityGroups_VBO1_nsg_name": {
-            "defaultValue": "VBO1-nsg",
+            "defaultValue": "nsg-VBO1",
             "type": "String"
         },
         "dataDisks": {
@@ -39,7 +51,7 @@
                     "caching": "ReadOnly",
                     "writeAcceleratorEnabled": false,
                     "id": null,
-                    "name": "VBO1_DataDisk_0",
+                    "name": "disk-VBO1_DataDisk_0",
                     "storageAccountType": null,
                     "diskSizeGB": null
                 }
@@ -49,7 +61,7 @@
             "type": "array",
             "defaultValue": [
                 {
-                    "name": "VBO1_DataDisk_0",
+                    "name": "disk-VBO1_DataDisk_0",
                     "sku": "StandardSSD_LRS",
                     "properties": {
                         "diskSizeGB": 512,
@@ -67,7 +79,7 @@
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2019-09-01",
             "name": "[parameters('networkSecurityGroups_VBO1_nsg_name')]",
-            "location": "eastus2",
+            "location": "[parameters('location')]",
             "properties": {
                 "securityRules": [
                     {
@@ -94,7 +106,7 @@
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2019-09-01",
             "name": "[parameters('publicIPAddresses_VBO1_ip_name')]",
-            "location": "eastus2",
+            "location": "[parameters('location')]",
             "sku": {
                 "name": "Basic"
             },
@@ -110,7 +122,7 @@
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2019-09-01",
             "name": "[parameters('virtualNetworks_VBO1_vnet_name')]",
-            "location": "eastus2",
+            "location": "[parameters('location')]",
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
@@ -122,7 +134,14 @@
                         "name": "default",
                         "properties": {
                             "addressPrefix": "192.168.2.0/24",
-                            "serviceEndpoints": [],
+                            "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "[parameters('location')]"
+                                    ]
+                                }
+                            ],
                             "delegations": [],
                             "privateEndpointNetworkPolicies": "Enabled",
                             "privateLinkServiceNetworkPolicies": "Enabled"
@@ -138,7 +157,7 @@
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-04-01",
             "name": "[parameters('storageAccounts_vbo1diag_name')]",
-            "location": "eastus2",
+            "location": "[parameters('location')]",
             "sku": {
                 "name": "Standard_LRS",
                 "tier": "Standard"
@@ -169,7 +188,7 @@
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-04-01",
             "name": "[parameters('storageAccounts_vbobackup1_name')]",
-            "location": "eastus2",
+            "location": "[parameters('location')]",
             "sku": {
                 "name": "Standard_RAGRS",
                 "tier": "Standard"
@@ -201,7 +220,7 @@
             "name": "[parameters('dataDiskResources')[copyIndex()].name]",
             "type": "Microsoft.Compute/disks",
             "apiVersion": "2019-03-01",
-            "location": "eastus2",
+            "location": "[parameters('location')]",
             "properties": "[parameters('dataDiskResources')[copyIndex()].properties]",
             "sku": {
                 "name": "[parameters('dataDiskResources')[copyIndex()].sku]"
@@ -209,25 +228,6 @@
             "copy": {
                 "name": "managedDiskResources",
                 "count": "[length(parameters('dataDiskResources'))]"
-            }
-        },
-        {
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-03-01",
-            "name": "[concat(parameters('virtualMachines_VBO1_name'), '/enablevmaccess')]",
-            "location": "eastus2",
-            "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachines_VBO1_name'))]"
-            ],
-            "properties": {
-                "autoUpgradeMinorVersion": true,
-                "publisher": "Microsoft.Compute",
-                "type": "VMAccessAgent",
-                "typeHandlerVersion": "2.0",
-                "settings": {
-                    "UserName": "dale"
-                },
-                "protectedSettings": {}
             }
         },
         {
@@ -250,21 +250,6 @@
                 "destinationPortRanges": [],
                 "sourceAddressPrefixes": [],
                 "destinationAddressPrefixes": []
-            }
-        },
-        {
-            "type": "Microsoft.Network/virtualNetworks/subnets",
-            "apiVersion": "2019-09-01",
-            "name": "[concat(parameters('virtualNetworks_VBO1_vnet_name'), '/default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_VBO1_vnet_name'))]"
-            ],
-            "properties": {
-                "addressPrefix": "192.168.2.0/24",
-                "serviceEndpoints": [],
-                "delegations": [],
-                "privateEndpointNetworkPolicies": "Enabled",
-                "privateLinkServiceNetworkPolicies": "Enabled"
             }
         },
         {
@@ -309,7 +294,7 @@
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-03-01",
             "name": "[parameters('virtualMachines_VBO1_name')]",
-            "location": "eastus2",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vbo1677_name'))]",
                 "[resourceId('Microsoft.Storage/StorageAccounts', parameters('storageAccounts_vbo1diag_name'))]"
@@ -359,7 +344,8 @@
                 },
                 "osProfile": {
                     "computerName": "[parameters('virtualMachines_VBO1_name')]",
-                    "adminUsername": "dale",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
                     "windowsConfiguration": {
                         "provisionVMAgent": true,
                         "enableAutomaticUpdates": true
@@ -410,7 +396,7 @@
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-09-01",
             "name": "[parameters('networkInterfaces_vbo1677_name')]",
-            "location": "eastus2",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_VBO1_ip_name'))]",
                 "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_VBO1_vnet_name'), 'default')]",
@@ -441,6 +427,27 @@
                 "enableIPForwarding": false,
                 "networkSecurityGroup": {
                     "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_VBO1_nsg_name'))]"
+                }
+            }
+        },
+        {
+            "apiVersion": "2018-06-01",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('virtualMachines_VBO1_name'),'/', 'InitializeDataDisks')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/',parameters('virtualMachines_VBO1_name'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.7",
+                "autoUpgradeMinorVersion":true,
+                "settings": {
+                    "fileUris": [
+                        "https://dkarmtemplates.blob.core.windows.net/scripts/initDisksAndDisableFWNoHyperV.ps1"
+                    ],
+                    "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File initDisksAndDisableFWNoHyperV.ps1"
                 }
             }
         }
