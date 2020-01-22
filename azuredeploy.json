@@ -30,9 +30,41 @@
             "defaultValue": "pip-VBO1",
             "type": "String"
         },
-        "virtualNetworks_VBO1_vnet_name": {
-            "defaultValue": "vnet-VBO1",
-            "type": "String"
+        "subnetName": {
+            "type": "string",
+            "defaultValue": "snet-default"
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "defaultValue": "vnet-VeeamLab"
+        },
+        "addressPrefixes": {
+            "type": "array",
+            "defaultValue": [
+                "192.168.2.0/24"
+            ]
+        },
+        "subnets": {
+            "type": "array",
+            "defaultValue": [
+                {
+                    "name": "[parameters('subnetName')]",
+                    "properties": {
+                        "addressPrefix": "[parameters('addressPrefixes')]",
+                        "serviceEndpoints": [
+                            {
+                                "service": "Microsoft.Storage",
+                                "locations": [
+                                    "[parameters('location')]"
+                                ]
+                            }
+                        ],
+                        "delegations": [],
+                        "privateEndpointNetworkPolicies": "Enabled",
+                        "privateLinkServiceNetworkPolicies": "Enabled"
+                    }
+                }
+            ]
         },
         "storageAccounts_vbobackup1_name": {
             "defaultValue": "vbobackup<123>",
@@ -111,7 +143,6 @@
                 "name": "Basic"
             },
             "properties": {
-                "ipAddress": "104.46.0.104",
                 "publicIPAddressVersion": "IPv4",
                 "publicIPAllocationMethod": "Dynamic",
                 "idleTimeoutInMinutes": 4,
@@ -121,19 +152,19 @@
         {
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2019-09-01",
-            "name": "[parameters('virtualNetworks_VBO1_vnet_name')]",
+            "name": "[parameters('virtualNetworkName')]",
             "location": "[parameters('location')]",
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
-                        "192.168.2.0/24"
+                        "[parameters('addressPrefixes')]"
                     ]
                 },
                 "subnets": [
                     {
-                        "name": "default",
+                        "name": "[parameters('subnetName')]",
                         "properties": {
-                            "addressPrefix": "192.168.2.0/24",
+                            "addressPrefix": "[parameters('addressPrefixes')]",
                             "serviceEndpoints": [
                                 {
                                     "service": "Microsoft.Storage",
@@ -399,7 +430,7 @@
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_VBO1_ip_name'))]",
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_VBO1_vnet_name'), 'default')]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
                 "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_VBO1_nsg_name'))]"
             ],
             "properties": {
@@ -407,13 +438,12 @@
                     {
                         "name": "ipconfig1",
                         "properties": {
-                            "privateIPAddress": "192.168.2.4",
                             "privateIPAllocationMethod": "Dynamic",
                             "publicIPAddress": {
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_VBO1_ip_name'))]"
                             },
                             "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_VBO1_vnet_name'), 'default')]"
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName'))]"
                             },
                             "primary": true,
                             "privateIPAddressVersion": "IPv4"
